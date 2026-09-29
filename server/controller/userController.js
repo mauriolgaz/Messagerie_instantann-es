@@ -3,12 +3,8 @@ const { Op } = require('sequelize'); // Import de Op pour éviter l'erreur Seque
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
+const { JWT_SECRET, JWT_EXPIRES_IN } = require('../config/jwt');
 
-
-
-// Clé secrète pour signer les JWT (à placer idéalement dans vos variables d'environnement .env)
-const JWT_SECRET = process.env.JWT_SECRET || 'josias@123#é`(';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
 // 1. Récupérer tous les utilisateurs
 exports.getAllUsers = async (req, res, next) => {
@@ -333,5 +329,27 @@ exports.loginUser=async(req, res, next)=>{
         })
     }catch(error){
         next(error);
+    }
+}
+
+exports.searchUser=async(req, res)=>{
+    try{
+        const {search}=req.query;
+        const currentUserId=req.user.id;
+
+        const users=await User.findAll({
+            where:{
+                id:{[Op.ne]: currentUserId},
+                [Op.or]:[
+                    { username: { [Op.like]: `%${search}%` } },
+                    { email: { [Op.like]: `%${search}%` } }
+                ]
+            }, 
+            attributes:['id', 'username', 'avatarUrl', 'isOnline']
+        })
+
+        return res.status(200).json(users);
+    }catch(error){
+        return res.status(500).json({error:error.message});
     }
 }

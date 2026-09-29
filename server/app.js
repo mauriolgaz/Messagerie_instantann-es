@@ -1,6 +1,11 @@
 const express = require('express');
 const app = express();
 const userRoutes = require('./Route/userRoute');
+const messageRoute=require('./Route/messageRoute')
+const contactRoute=require('./Route/contactRoute')
+const callRoute=require('./Route/callRoute')
+const roomRoute=require('./Route/roomRoute')
+const roomMemberRoute=require('./Route/roomMemberRoute')
 
 // Middleware pour parser les données JSON entrantes
 app.use(express.json());
@@ -13,6 +18,11 @@ app.get('/', (req, res) => {
 });
 
 app.use('/users', userRoutes);
+app.use('/message', messageRoute);
+app.use('/contact', contactRoute);
+app.use('/call', callRoute);
+app.use('/room', roomRoute);
+app.use('/roomMember', roomMemberRoute);
 
 // -------------------------------------------------------------
 // Middleware pour la gestion de l'Erreur 404 (Route non trouvée)
